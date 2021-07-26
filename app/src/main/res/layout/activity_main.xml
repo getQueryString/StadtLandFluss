@@ -125,6 +125,7 @@
             android:backgroundTint="#FF0000"
             android:text="Start"
             android:textColor="#FFFFFF"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.058"
             app:layout_constraintLeft_toLeftOf="parent"

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean timerRunning;
     public boolean finished = false;
+    public boolean gameover = false;
+
     public int pointsCount = 0;
 
     @SuppressLint("WrongConstant")
@@ -76,15 +79,19 @@ public class MainActivity extends AppCompatActivity {
         // ImageView
         github = findViewById(R.id.img_github);
 
+        stadt.setEnabled(false);
+        land.setEnabled(false);
+        fluss.setEnabled(false);
+
         rdmbtn.setOnClickListener(v -> {
             stadt.setText("");
             land.setText("");
             fluss.setText("");
 
-            if (!stadt.isEnabled() && !land.isEnabled() && !fluss.isEnabled()) {
-                stadt.setEnabled(true);
-                land.setEnabled(true);
-                fluss.setEnabled(true);
+            if (stadt.isEnabled() && land.isEnabled() && fluss.isEnabled()) {
+                stadt.setEnabled(false);
+                land.setEnabled(false);
+                fluss.setEnabled(false);
             }
 
             String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
@@ -93,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
             rdmbtn.setText("Neuer Zufallsbuchstabe");
 
             stopTimer();
+            finished = false;
         });
 
         start.setOnClickListener(v -> {
@@ -101,12 +109,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         clear.setOnClickListener(v -> {
-            if (!stadt.isEnabled() && !land.isEnabled() && !fluss.isEnabled()) {
-                stadt.setEnabled(true);
-                land.setEnabled(true);
-                fluss.setEnabled(true);
-            }
-
             rdmout.setText("Buchstabe:");
             rdmbtn.setText("Zufallsbuchstabe");
             stadt.setText("");
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
             stopTimer();
             finished = false;
+            gameover = false;
         });
 
         finish.setOnClickListener(v -> {
@@ -126,29 +129,38 @@ public class MainActivity extends AppCompatActivity {
             fluss.setEnabled(false);
 
             finishTimer();
+            gameover = true;
         });
 
         fivepoints.setOnClickListener(v -> {
-            pointsCount += 5;
-            points.setText("Punkte: " + pointsCount);
-        });
-
-        tenpoints.setOnClickListener(v -> {
-            pointsCount += 10;
-            points.setText("Punkte: " + pointsCount);
-        });
-
-        minus_fivepoints.setOnClickListener(v -> {
-            if (pointsCount > 0) {
-                pointsCount -= 5;
+            if (!timerRunning) {
+                pointsCount += 5;
                 points.setText("Punkte: " + pointsCount);
             }
         });
 
-        minus_tenpoints.setOnClickListener(v -> {
-            if (pointsCount > 0 && !(pointsCount == 5)) {
-                pointsCount -= 10;
+        tenpoints.setOnClickListener(v -> {
+            if (!timerRunning) {
+                pointsCount += 10;
                 points.setText("Punkte: " + pointsCount);
+            }
+        });
+
+        minus_fivepoints.setOnClickListener(v -> {
+            if (!timerRunning) {
+                if (pointsCount > 0) {
+                    pointsCount -= 5;
+                    points.setText("Punkte: " + pointsCount);
+                }
+            }
+        });
+
+        minus_tenpoints.setOnClickListener(v -> {
+            if (!timerRunning) {
+                if (pointsCount > 0 && !(pointsCount == 5)) {
+                    pointsCount -= 10;
+                    points.setText("Punkte: " + pointsCount);
+                }
             }
         });
 
@@ -165,10 +177,10 @@ public class MainActivity extends AppCompatActivity {
     public void startStop() {
         if (timerRunning) {
             pauseTimer();
-        } else {
-            if (finished == false) {
-                startTimer();
-            }
+        } else if (finished == false) {
+            startTimer();
+        } else if (gameover == true) {
+            Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -180,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onTick(long millisUntilFinished) {
                     timeLeftInMilliseconds = millisUntilFinished;
                     updateTimer();
-
                 }
 
                 @Override
@@ -189,21 +200,32 @@ public class MainActivity extends AppCompatActivity {
                 }
             }.start();
             start.setText("Pause");
+            start.setTextSize(14);
             start.setBackgroundColor(Color.rgb(0, 255, 0));
             timerRunning = true;
+            if (timerRunning) {
+                stadt.setEnabled(true);
+                land.setEnabled(true);
+                fluss.setEnabled(true);
+            }
         }
     }
 
     public void pauseTimer() {
         countDownTimer.cancel();
         start.setText("Resume");
+        start.setTextSize(13);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
+        stadt.setEnabled(false);
+        land.setEnabled(false);
+        fluss.setEnabled(false);
     }
 
     public void finishTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Beendet");
+        start.setTextSize(12);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
         finished = true;
@@ -212,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
     public void stopTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Start");
+        start.setTextSize(14);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
         timeLeftInMilliseconds = 60000;
