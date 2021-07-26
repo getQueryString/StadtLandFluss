@@ -16,11 +16,6 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * TODO
-     * +5 & +10 Punkte
-     */
-
     // Button
     Button rdmbtn;
     Button clear;
