@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
             rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
 
-            rdmbtn.setText("Neuer Zufallsbuchstabe");
+            rdmbtn.setText("Nächste Runde");
 
             stopTimer();
             finished = false;
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         clear.setOnClickListener(v -> {
             rdmout.setText("Buchstabe:");
-            rdmbtn.setText("Zufallsbuchstabe");
+            rdmbtn.setText("Neue Runde");
             stadt.setText("");
             land.setText("");
             fluss.setText("");
