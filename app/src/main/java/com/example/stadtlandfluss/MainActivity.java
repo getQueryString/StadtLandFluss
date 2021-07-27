@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
             stopTimer();
             finished = false;
+            gameover = false;
         });
 
         start.setOnClickListener(v -> {
@@ -115,21 +116,41 @@ public class MainActivity extends AppCompatActivity {
             land.setText("");
             fluss.setText("");
 
+            stadt.setEnabled(false);
+            land.setEnabled(false);
+            fluss.setEnabled(false);
+
             pointsCount = 0;
             points.setText("Punkte: 0");
 
             stopTimer();
             finished = false;
             gameover = false;
+
+            if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.WHITE);
+            if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.WHITE);
+            if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.WHITE);
         });
 
         finish.setOnClickListener(v -> {
-            stadt.setEnabled(false);
-            land.setEnabled(false);
-            fluss.setEnabled(false);
+            if (timerRunning) {
+                if (gameover == false) {
+                    stadt.setEnabled(false);
+                    land.setEnabled(false);
+                    fluss.setEnabled(false);
 
-            finishTimer();
-            gameover = true;
+                    if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.RED);
+                    if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.RED);
+                    if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.RED);
+
+                    finishTimer();
+                    gameover = true;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         fivepoints.setOnClickListener(v -> {
@@ -200,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }.start();
             start.setText("Pause");
-            start.setTextSize(14);
             start.setBackgroundColor(Color.rgb(0, 255, 0));
             timerRunning = true;
             if (timerRunning) {
@@ -214,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
     public void pauseTimer() {
         countDownTimer.cancel();
         start.setText("Resume");
-        start.setTextSize(13);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
         stadt.setEnabled(false);
@@ -225,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
     public void finishTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Beendet");
-        start.setTextSize(12);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
         finished = true;
@@ -234,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
     public void stopTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Start");
-        start.setTextSize(14);
         start.setBackgroundColor(Color.rgb(255, 0, 0));
         timerRunning = false;
         timeLeftInMilliseconds = 60000;
