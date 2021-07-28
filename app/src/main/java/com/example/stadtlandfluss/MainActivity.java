@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean timerRunning;
     public boolean finished = false;
     public boolean gameover = false;
+    public boolean countDownStarted = false;
 
     public int pointsCount = 0;
 
@@ -83,25 +85,18 @@ public class MainActivity extends AppCompatActivity {
         land.setEnabled(false);
         fluss.setEnabled(false);
 
-        rdmbtn.setOnClickListener(v -> {
-            stadt.setText("");
-            land.setText("");
-            fluss.setText("");
+        minus_fivepoints.setVisibility(View.INVISIBLE);
+        minus_tenpoints.setVisibility(View.INVISIBLE);
 
-            if (stadt.isEnabled() && land.isEnabled() && fluss.isEnabled()) {
-                stadt.setEnabled(false);
-                land.setEnabled(false);
-                fluss.setEnabled(false);
-            }
+        rdmbtn.setOnClickListener(v -> {
+            clearOrNextRound();
 
             String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
             rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
 
             rdmbtn.setText("Nächste Runde");
 
-            stopTimer();
-            finished = false;
-            gameover = false;
+
         });
 
         start.setOnClickListener(v -> {
@@ -112,42 +107,17 @@ public class MainActivity extends AppCompatActivity {
         clear.setOnClickListener(v -> {
             rdmout.setText("Buchstabe:");
             rdmbtn.setText("Neue Runde");
-            stadt.setText("");
-            land.setText("");
-            fluss.setText("");
-
-            stadt.setEnabled(false);
-            land.setEnabled(false);
-            fluss.setEnabled(false);
 
             pointsCount = 0;
             points.setText("Punkte: 0");
 
-            stopTimer();
-            finished = false;
-            gameover = false;
-
-            if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.WHITE);
-            if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.WHITE);
-            if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.WHITE);
+            clearOrNextRound();
         });
 
         finish.setOnClickListener(v -> {
-            if (timerRunning) {
-                if (gameover == false) {
-                    stadt.setEnabled(false);
-                    land.setEnabled(false);
-                    fluss.setEnabled(false);
+            if (countDownStarted == true && gameover == false) {
+                finishTimer();
 
-                    if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.RED);
-                    if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.RED);
-                    if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.RED);
-
-                    finishTimer();
-                    gameover = true;
-                } else {
-                    Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
-                }
             } else {
                 Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
             }
@@ -158,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 pointsCount += 5;
                 points.setText("Punkte: " + pointsCount);
             }
+            checkPoints();
         });
 
         tenpoints.setOnClickListener(v -> {
@@ -165,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 pointsCount += 10;
                 points.setText("Punkte: " + pointsCount);
             }
+            checkPoints();
         });
 
         minus_fivepoints.setOnClickListener(v -> {
@@ -174,15 +146,19 @@ public class MainActivity extends AppCompatActivity {
                     points.setText("Punkte: " + pointsCount);
                 }
             }
+            checkPoints();
         });
 
         minus_tenpoints.setOnClickListener(v -> {
             if (!timerRunning) {
-                if (pointsCount > 0 && !(pointsCount == 5)) {
+                if (pointsCount >= 10) {
                     pointsCount -= 10;
-                    points.setText("Punkte: " + pointsCount);
+                } else if (pointsCount == 5) {
+                    pointsCount -= 5;
                 }
+                points.setText("Punkte: " + pointsCount);
             }
+            checkPoints();
         });
 
         github.setOnClickListener(v -> {
@@ -192,7 +168,42 @@ public class MainActivity extends AppCompatActivity {
             intent.setData(Uri.parse("https://github.com/getQueryString/StadtLandFluss"));
             startActivity(intent);
         });
-        updateTimer();
+    }
+
+    public void checkPoints() {
+        if (pointsCount >= 5) minus_fivepoints.setVisibility(View.VISIBLE);
+        if (pointsCount >= 10) {
+            minus_fivepoints.setVisibility(View.VISIBLE);
+            minus_tenpoints.setVisibility(View.VISIBLE);
+        }
+        if (pointsCount < 5) {
+            minus_fivepoints.setVisibility(View.INVISIBLE);
+            if (minus_tenpoints.getVisibility() == View.VISIBLE) {
+                minus_tenpoints.setVisibility(View.INVISIBLE);
+            }
+        }
+        if (pointsCount < 10) minus_tenpoints.setVisibility(View.INVISIBLE);
+        else if (pointsCount == 0) {
+            minus_fivepoints.setVisibility(View.INVISIBLE);
+            minus_tenpoints.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void clearOrNextRound() {
+        stopTimer();
+        finished = false;
+        gameover = false;
+        countDownStarted = false;
+        stadt.setEnabled(false);
+        land.setEnabled(false);
+        fluss.setEnabled(false);
+        stadt.setText("");
+        land.setText("");
+        fluss.setText("");
+        if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.WHITE);
+        if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.WHITE);
+        if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.WHITE);
+        finish.setBackgroundColor(Color.parseColor("#01DF01"));
     }
 
     public void startStop() {
@@ -200,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
             pauseTimer();
         } else if (finished == false) {
             startTimer();
+            finish.setBackgroundColor(Color.parseColor("#01DF01"));
         } else if (gameover == true) {
             Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
         }
@@ -207,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTimer() {
         if (!timerRunning) {
+            countDownStarted = true;
             countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
 
                 @Override
@@ -217,11 +230,11 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFinish() {
-
+                    finishTimer();
                 }
             }.start();
             start.setText("Pause");
-            start.setBackgroundColor(Color.rgb(0, 255, 0));
+            start.setBackgroundColor(Color.GREEN);
             timerRunning = true;
             if (timerRunning) {
                 stadt.setEnabled(true);
@@ -234,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     public void pauseTimer() {
         countDownTimer.cancel();
         start.setText("Resume");
-        start.setBackgroundColor(Color.rgb(255, 0, 0));
+        start.setBackgroundColor(Color.RED);
         timerRunning = false;
         stadt.setEnabled(false);
         land.setEnabled(false);
@@ -244,15 +257,27 @@ public class MainActivity extends AppCompatActivity {
     public void finishTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Beendet");
-        start.setBackgroundColor(Color.rgb(255, 0, 0));
+        start.setBackgroundColor(Color.RED);
+        finish.setBackgroundColor(Color.RED);
+
         timerRunning = false;
         finished = true;
+        gameover = true;
+        countDownStarted = false;
+
+        stadt.setEnabled(false);
+        land.setEnabled(false);
+        fluss.setEnabled(false);
+
+        if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.RED);
+        if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.RED);
+        if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.RED);
     }
 
     public void stopTimer() {
         if (timerRunning) countDownTimer.cancel();
         start.setText("Start");
-        start.setBackgroundColor(Color.rgb(255, 0, 0));
+        start.setBackgroundColor(Color.RED);
         timerRunning = false;
         timeLeftInMilliseconds = 60000;
         countdown.setText("Zeit: 1:00");
