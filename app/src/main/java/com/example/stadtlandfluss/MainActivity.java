@@ -1,3 +1,5 @@
+// Copyright© by Fin
+
 package com.example.stadtlandfluss;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -111,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
             pointsCount = 0;
             points.setText("Punkte: 0");
 
+            if (minus_fivepoints.getVisibility() == View.VISIBLE)
+                minus_fivepoints.setVisibility(View.INVISIBLE);
+            if (minus_tenpoints.getVisibility() == View.VISIBLE)
+                minus_tenpoints.setVisibility(View.INVISIBLE);
+
             clearOrNextRound();
         });
 
@@ -204,6 +211,23 @@ public class MainActivity extends AppCompatActivity {
         if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.WHITE);
         if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.WHITE);
         finish.setBackgroundColor(Color.parseColor("#01DF01"));
+
+    }
+
+    public void resetPointButtons() {
+        System.out.println("IUDHFNWURDE RESETTETETTT");
+        if (fivepoints.getVisibility() == View.INVISIBLE) {
+            fivepoints.setVisibility(View.VISIBLE);
+        }
+        if (tenpoints.getVisibility() == View.INVISIBLE) {
+            tenpoints.setVisibility(View.VISIBLE);
+        }
+        if (minus_fivepoints.getVisibility() == View.INVISIBLE && pointsCount >= 5) {
+            minus_fivepoints.setVisibility(View.VISIBLE);
+        }
+        if (minus_tenpoints.getVisibility() == View.INVISIBLE && pointsCount >= 10) {
+            minus_tenpoints.setVisibility(View.VISIBLE);
+        }
     }
 
     public void startStop() {
@@ -211,13 +235,17 @@ public class MainActivity extends AppCompatActivity {
             pauseTimer();
         } else if (finished == false) {
             startTimer();
-            finish.setBackgroundColor(Color.parseColor("#01DF01"));
         } else if (gameover == true) {
             Toast.makeText(getApplicationContext(), "Spiel läuft nicht!", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void startTimer() {
+        finish.setBackgroundColor(Color.parseColor("#01DF01"));
+        fivepoints.setVisibility(View.INVISIBLE);
+        tenpoints.setVisibility(View.INVISIBLE);
+        minus_fivepoints.setVisibility(View.INVISIBLE);
+        minus_tenpoints.setVisibility(View.INVISIBLE);
         if (!timerRunning) {
             countDownStarted = true;
             countDownTimer = new CountDownTimer(timeLeftInMilliseconds, 1000) {
@@ -245,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void pauseTimer() {
+        resetPointButtons();
+
         countDownTimer.cancel();
         start.setText("Resume");
         start.setBackgroundColor(Color.RED);
@@ -255,6 +285,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void finishTimer() {
+        resetPointButtons();
+
         if (timerRunning) countDownTimer.cancel();
         start.setText("Beendet");
         start.setBackgroundColor(Color.RED);
@@ -275,6 +307,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopTimer() {
+        resetPointButtons();
+
         if (timerRunning) countDownTimer.cancel();
         start.setText("Start");
         start.setBackgroundColor(Color.RED);
