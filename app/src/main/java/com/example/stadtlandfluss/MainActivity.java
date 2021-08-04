@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     // ImageView
     ImageView github;
 
+    // CheckBox
+    CheckBox checkBox;
+
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 60000;
 
@@ -78,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
         // ImageView
         github = findViewById(R.id.img_github);
 
+        // CheckBox
+        checkBox = findViewById(R.id.check_Box);
+
         stadt.setEnabled(false);
         land.setEnabled(false);
         fluss.setEnabled(false);
@@ -88,8 +94,13 @@ public class MainActivity extends AppCompatActivity {
         rdmbtn.setOnClickListener(v -> {
             clearOrNextRound();
 
-            String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-            rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
+            if (checkBox.isChecked()) {
+                String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+                rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
+
+            } else {
+                rdmout.setText("Buchstabe:");
+            }
 
             rdmbtn.setText("Nächste Runde");
 
@@ -108,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
             pointsCount = 0;
             points.setText("Punkte: 0");
 
+            if (checkBox.isChecked()) checkBox.setChecked(false);
             if (minus_fivepoints.getVisibility() == View.VISIBLE)
                 minus_fivepoints.setVisibility(View.INVISIBLE);
             if (minus_tenpoints.getVisibility() == View.VISIBLE)
@@ -210,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void resetPointButtons() {
-        System.out.println("IUDHFNWURDE RESETTETETTT");
         if (fivepoints.getVisibility() == View.INVISIBLE) {
             fivepoints.setVisibility(View.VISIBLE);
         }
