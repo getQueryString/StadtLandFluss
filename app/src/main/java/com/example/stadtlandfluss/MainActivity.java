@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.*;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(Configuration.ORIENTATION_PORTRAIT);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Button
         rdmbtn = findViewById(R.id.rdm_btn);
