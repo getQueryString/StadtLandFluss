@@ -45,10 +45,11 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 60000;
 
-    public boolean timerRunning;
+    public boolean timerRunning = false;
     public boolean finished = false;
     public boolean gameover = false;
     public boolean countDownStarted = false;
+    public boolean randomLetter = false;
 
     public int pointsCount = 0;
 
@@ -96,17 +97,7 @@ public class MainActivity extends AppCompatActivity {
         rdmbtn.setOnClickListener(v -> {
             clearOrNextRound();
 
-            if (checkBox.isChecked()) {
-                String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
-                rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
-
-            } else {
-                rdmout.setText("Buchstabe:");
-            }
-
             rdmbtn.setText("Nächste Runde");
-
-
         });
 
         start.setOnClickListener(v -> {
@@ -210,12 +201,15 @@ public class MainActivity extends AppCompatActivity {
         finished = false;
         gameover = false;
         countDownStarted = false;
+        randomLetter = false;
         stadt.setEnabled(false);
         land.setEnabled(false);
         fluss.setEnabled(false);
+        checkBox.setEnabled(true);
         stadt.setText("");
         land.setText("");
         fluss.setText("");
+        rdmout.setText("Buchstabe:");
         if (stadt.getText().toString().isEmpty()) stadt.setHintTextColor(Color.WHITE);
         if (land.getText().toString().isEmpty()) land.setHintTextColor(Color.WHITE);
         if (fluss.getText().toString().isEmpty()) fluss.setHintTextColor(Color.WHITE);
@@ -249,6 +243,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTimer() {
+        if (checkBox.isChecked() && randomLetter == false) {
+            String[] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+            rdmout.setText("Buchstabe: " + chars[(int) (Math.random() * 10)].toUpperCase());
+            randomLetter = true;
+        }
+
         finish.setBackgroundColor(Color.parseColor("#01DF01"));
         fivepoints.setVisibility(View.INVISIBLE);
         tenpoints.setVisibility(View.INVISIBLE);
@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             start.setText("Pause");
             start.setBackgroundColor(Color.GREEN);
             timerRunning = true;
+            checkBox.setEnabled(false);
             if (timerRunning) {
                 stadt.setEnabled(true);
                 land.setEnabled(true);
@@ -304,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
         finished = true;
         gameover = true;
         countDownStarted = false;
+        randomLetter = false;
 
         stadt.setEnabled(false);
         land.setEnabled(false);
@@ -321,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
         start.setText("Start");
         start.setBackgroundColor(Color.RED);
         timerRunning = false;
+        randomLetter = false;
         timeLeftInMilliseconds = 60000;
         countdown.setText("Zeit: 1:00");
     }
